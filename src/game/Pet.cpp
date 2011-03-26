@@ -271,12 +271,12 @@ bool Pet::LoadPetFromDB( Player* owner, uint32 petentry, uint32 petnumber, bool 
     if (getPetType() == SUMMON_PET && !current)             //all (?) summon pets come with full health when called, but not when they are current
     {
         SetHealth(GetMaxHealth());
-        SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
+        SetPower(getPowerType(), GetMaxPower(getPowerType()));
     }
     else
     {
         SetHealth(savedhealth > GetMaxHealth() ? GetMaxHealth() : savedhealth);
-        SetPower(POWER_MANA, savedmana > GetMaxPower(POWER_MANA) ? GetMaxPower(POWER_MANA) : savedmana);
+        SetPower(getPowerType(), savedmana > GetMaxPower(getPowerType()) ? GetMaxPower(getPowerType()) : savedmana);
     }
 
     UpdateWalkMode(owner);
@@ -587,7 +587,8 @@ void Pet::Update(uint32 update_diff, uint32 diff)
             break;
     }
 
-    Creature::Update(update_diff, diff);
+    if (IsInWorld())
+        Creature::Update(update_diff, diff);
 }
 
 void Pet::Regenerate(Powers power)
@@ -1063,7 +1064,7 @@ bool Pet::InitStatsForLevel(uint32 petlevel, Unit* owner)
     UpdateAllStats();
 
     SetHealth(GetMaxHealth());
-    SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
+    SetPower(getPowerType(), GetMaxPower(getPowerType()));
 
     return true;
 }
@@ -1982,7 +1983,7 @@ bool Pet::Create(uint32 guidlow, CreatureCreatePos& cPos, uint32 Entry, uint32 p
     SetMap(cPos.GetMap());
     SetPhaseMask(cPos.GetPhaseMask(), false);
 
-    Object::_Create(guidlow, pet_number, HIGHGUID_PET);
+    Object::_Create(ObjectGuid(HIGHGUID_PET, pet_number, guidlow));
 
     m_originalEntry = Entry;
 

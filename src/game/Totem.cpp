@@ -39,7 +39,9 @@ bool Totem::Create(uint32 guidlow, CreatureCreatePos& cPos, uint32 Entry, Unit* 
 
     Team team = owner->GetTypeId() == TYPEID_PLAYER ? ((Player*)owner)->GetTeam() : TEAM_NONE;
 
-    if (!CreateFromProto(guidlow, Entry, team))
+    ObjectGuid guid(HIGHGUID_UNIT, Entry, guidlow);
+
+    if (!CreateFromProto(guid, Entry, team))
         return false;
 
     // special model selection case for totems

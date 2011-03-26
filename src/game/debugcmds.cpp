@@ -645,7 +645,7 @@ bool ChatHandler::HandleDebugArenaCommand(char* /*args*/)
     return true;
 }
 
-bool ChatHandler::HandleDebugSpawnVehicleCommand(char* args)
+/*bool ChatHandler::HandleDebugSpawnVehicleCommand(char* args)
 {
     uint32 entry;
     if (!ExtractUInt32(&args, entry))
@@ -678,7 +678,7 @@ bool ChatHandler::HandleDebugSpawnVehicleCommand(char* args)
     pos.GetMap()->Add((Creature*)v);
 
     return true;
-}
+}*/
 
 bool ChatHandler::HandleDebugSpellCheckCommand(char* /*args*/)
 {

@@ -4091,6 +4091,10 @@ bool ChatHandler::HandleNpcInfoCommand(char* /*args*/)
     std::string defRespawnDelayStr = secsToTimeString(target->GetRespawnDelay(),true);
 
     PSendSysMessage(LANG_NPCINFO_CHAR,  target->GetGUIDLow(), faction, npcflags, Entry, displayid, nativeid);
+
+    if (cInfo->VehicleId)
+        PSendSysMessage("VehicleId: %u", cInfo->VehicleId);
+
     PSendSysMessage(LANG_NPCINFO_LEVEL, target->getLevel());
     PSendSysMessage(LANG_NPCINFO_HEALTH,target->GetCreateHealth(), target->GetMaxHealth(), target->GetHealth());
     PSendSysMessage(LANG_NPCINFO_FLAGS, target->GetUInt32Value(UNIT_FIELD_FLAGS), target->GetUInt32Value(UNIT_DYNAMIC_FLAGS), target->getFaction());
