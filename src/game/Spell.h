@@ -386,6 +386,7 @@ class Spell
         uint32 getState() const { return m_spellState; }
         void setState(uint32 state) { m_spellState = state; }
 
+        void DoSummonPossessed(SpellEffectIndex eff_idx);
         void DoCreateItem(SpellEffectIndex eff_idx, uint32 itemtype);
         void DoSummon(SpellEffectIndex eff_idx);
         void DoSummonWild(SpellEffectIndex eff_idx, uint32 forceFaction = 0);

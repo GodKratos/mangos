@@ -681,6 +681,7 @@ class MANGOS_DLL_SPEC Creature : public Unit
 
         void SetActiveObjectState(bool on);
 
+        void LockAI(bool lock) { m_AI_locked = lock; }
         void SendAreaSpiritHealerQueryOpcode(Player *pl);
 
         void SetVirtualItem(VirtualItemSlot slot, uint32 item_id) { SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + slot, item_id); }

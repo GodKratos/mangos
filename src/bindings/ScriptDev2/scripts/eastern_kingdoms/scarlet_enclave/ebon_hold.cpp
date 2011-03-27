@@ -1144,6 +1144,137 @@ bool GOUse_go_acherus_soul_prison(Player* pPlayer, GameObject* pGo)
     return false;
 }
 
+/*######
+## npc_eye_of_acherus
+######*/
+
+enum eEyeOfAcherus
+{
+    SPELL_EYE_PHASEMASK     = 70889,
+    SPELL_EYE_VISUAL        = 51892,
+    SPELL_EYE_FLIGHT        = 51890,
+    SPELL_EYE_FLIGHT_BOOST  = 57092,
+    SPELL_EYE_CONTROL       = 51852,
+
+    DISPLAYID_EYE           = 26320,
+};
+
+struct MANGOS_DLL_DECL npc_eye_of_acherusAI : public ScriptedAI
+{
+    npc_eye_of_acherusAI(Creature *pCreature) : ScriptedAI(pCreature)
+    {
+        Reset();
+    }
+
+    bool m_isActive;
+
+    void Reset()
+    {
+        m_creature->SetDisplayId(DISPLAYID_EYE);
+        m_isActive = false;
+    }
+
+    void AttackStart(Unit *) {}
+    void MoveInLineOfSight(Unit *) {}
+
+    void JustDied(Unit *)
+    {
+        if (Unit* charmer = m_creature->GetCharmer())
+            charmer->RemoveAurasDueToSpell(SPELL_EYE_CONTROL);
+    }
+
+    void MovementInform(uint32 uiType, uint32 uiPointId)
+    {
+       if (uiType != POINT_MOTION_TYPE || uiPointId != 0)
+            return;
+
+        char * text = "The Eye of Acherus is in your control";
+        m_creature->MonsterTextEmote(text, m_creature, true);
+        m_creature->CastSpell(m_creature, SPELL_EYE_FLIGHT, true);
+    }
+
+    void AttackedBy(Unit * attacker)
+    {
+        // called on remove SPELL_AURA_MOD_POSSESS
+        if (!m_creature->isCharmed() && attacker->GetTypeId() == TYPEID_PLAYER)
+        {
+            attacker->RemoveAurasDueToSpell(SPELL_EYE_CONTROL);
+            // m_creature->ForcedDespawn();
+        }
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (m_creature->isCharmed())
+        {
+            if (!m_isActive)
+            {
+                char * text = "The Eye of Acherus launches towards its destination";
+                m_creature->MonsterTextEmote(text, m_creature, true);
+                m_creature->CastSpell(m_creature, SPELL_EYE_PHASEMASK, true);
+                m_creature->CastSpell(m_creature, SPELL_EYE_VISUAL, true);
+                m_creature->CastSpell(m_creature, SPELL_EYE_FLIGHT_BOOST, true);
+                m_creature->GetMotionMaster()->MovePoint(0,1750.8276f, -5873.788f, 147.2266f);
+                m_isActive = true;
+            }
+        }
+        else
+            m_creature->ForcedDespawn();
+    }
+};
+
+CreatureAI* GetAI_npc_eye_of_acherus(Creature* pCreature)
+{
+    return new npc_eye_of_acherusAI(pCreature);
+}
+
+/*######
+## Mob scarlet miner
+######*/
+enum scarletminer
+{
+    SPELL_GIFT_OF_THE_HARVESTER_MISSILE = 52481,
+    NPC_SCARLET_GHOUL                   = 28845
+};
+
+struct MANGOS_DLL_DECL mob_scarlet_minerAI : public ScriptedAI
+{
+    mob_scarlet_minerAI(Creature *pCreature) : ScriptedAI(pCreature)
+    {
+        // hack spell 52481
+        SpellEntry *TempSpell = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_GIFT_OF_THE_HARVESTER_MISSILE);
+        if (TempSpell && TempSpell->EffectImplicitTargetB[0] != 16)
+        {
+            TempSpell->EffectImplicitTargetB[0] = 16;
+            TempSpell->EffectImplicitTargetB[1] = 87;
+            TempSpell->EffectImplicitTargetB[2] = 16;
+        }
+    }
+
+    void Reset() {}
+
+    void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
+    {
+        if (pCaster->GetTypeId() == TYPEID_PLAYER && m_creature->isAlive() && pSpell->Id == SPELL_GIFT_OF_THE_HARVESTER_MISSILE)
+        {
+            if(((Player*)pCaster)->GetQuestStatus(12698) == QUEST_STATUS_INCOMPLETE)
+            {
+                // spell 52490 Scarlet Miner Ghoul Transform doesn't work, hack it
+                Unit* pGhoul = m_creature->SummonCreature(NPC_SCARLET_GHOUL, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 60000);
+                ((Player*)pCaster)->KilledMonsterCredit(NPC_SCARLET_GHOUL, pGhoul->GetGUID());
+                //((Player*)pCaster)->KilledMonster(NPC_SCARLET_GHOUL,pGhoul->GetGUID());
+                m_creature->SetDeathState(JUST_DIED);
+                m_creature->RemoveCorpse();
+            }
+        }
+    }
+};
+
+CreatureAI* GetAI_mob_scarlet_miner(Creature* pCreature)
+{
+    return new mob_scarlet_minerAI (pCreature);
+}
+
 void AddSC_ebon_hold()
 {
     Script* pNewScript;
@@ -1179,5 +1310,15 @@ void AddSC_ebon_hold()
     pNewScript = new Script;
     pNewScript->Name = "go_acherus_soul_prison";
     pNewScript->pGOUse = &GOUse_go_acherus_soul_prison;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_eye_of_acherus";
+    pNewScript->GetAI = &GetAI_npc_eye_of_acherus;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "mob_scarlet_miner";
+    pNewScript->GetAI = &GetAI_mob_scarlet_miner;
     pNewScript->RegisterSelf();
 }
