@@ -1643,23 +1643,23 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                 return;
 
             if (Creature* pTemp = m_pMap->GetCreature(uiTirionGUID))
-                pTemp->setDeathState(JUST_DIED);
+                pTemp->SetDeathState(JUST_DIED);
             if (Creature* pTemp = m_pMap->GetCreature(uiKorfaxGUID))
-                pTemp->setDeathState(JUST_DIED);
+                pTemp->SetDeathState(JUST_DIED);
             if (Creature* pTemp = m_pMap->GetCreature(uiMaxwellGUID))
-                pTemp->setDeathState(JUST_DIED);
+                pTemp->SetDeathState(JUST_DIED);
             if (Creature* pTemp = m_pMap->GetCreature(uiEligorGUID))
-                pTemp->setDeathState(JUST_DIED);
+                pTemp->SetDeathState(JUST_DIED);
             if (Creature* pTemp = m_pMap->GetCreature(uiRayneGUID))
-                pTemp->setDeathState(JUST_DIED);
+                pTemp->SetDeathState(JUST_DIED);
             if (Creature* pTemp = m_pMap->GetCreature(uiEarthshatterGUID))
-                pTemp->setDeathState(JUST_DIED);
+                pTemp->SetDeathState(JUST_DIED);
             if (Creature* pTemp = m_pMap->GetCreature(uiLeonidGUID))
-                pTemp->setDeathState(JUST_DIED);
+                pTemp->SetDeathState(JUST_DIED);
             if (Creature* pTemp = m_pMap->GetCreature(uiDukeGUID))
-                pTemp->setDeathState(JUST_DIED);
+                pTemp->SetDeathState(JUST_DIED);
             if (Creature* pTemp = m_pMap->GetCreature(uiLichKingGUID))
-                pTemp->setDeathState(JUST_DIED);
+                pTemp->SetDeathState(JUST_DIED);
             if (Creature* pTemp = m_pMap->GetCreature(uiKoltiraGUID))
                 pTemp->Respawn();
             if (Creature* pTemp = m_pMap->GetCreature(uiOrbazGUID))
@@ -1683,19 +1683,19 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
             for(uint8 i = 0; i < ENCOUNTER_GHOUL_NUMBER; ++i)
             {
                 if (Creature* pTemp = m_pMap->GetCreature(uiGhoulGUID[i]))
-                    pTemp->setDeathState(JUST_DIED);
+                    pTemp->SetDeathState(JUST_DIED);
                 uiGhoulGUID[i] = 0;
             }
             for(uint8 i = 0; i < ENCOUNTER_WARRIOR_NUMBER; ++i)
             {
                 if (Creature* pTemp = m_pMap->GetCreature(uiWarriorGUID[i]))
-                    pTemp->setDeathState(JUST_DIED);
+                    pTemp->SetDeathState(JUST_DIED);
                 uiWarriorGUID[i] = 0;
             }
             for(uint8 i = 0; i < ENCOUNTER_ABOMINATION_NUMBER; ++i)
             {
                 if (Creature* pTemp = m_pMap->GetCreature(uiAbominationGUID[i]))
-                   pTemp->setDeathState(JUST_DIED);
+                   pTemp->SetDeathState(JUST_DIED);
                 uiAbominationGUID[i] = 0;
             }
             for(uint8 i = 0; i < ENCOUNTER_BEHEMOTH_NUMBER; ++i)
@@ -1703,7 +1703,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
             for(uint8 i = 0; i < ENCOUNTER_DEFENDER_NUMBER; ++i)
             {
                 if (Creature* pTemp = m_pMap->GetCreature(uiDefenderGUID[i]))
-                    pTemp->setDeathState(JUST_DIED);
+                    pTemp->SetDeathState(JUST_DIED);
                 uiDefenderGUID[i] = 0;
             }
         }
@@ -2038,7 +2038,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                         o = m_creature->GetAngle(x, y) + M_PI_F;
 
                         if (m_pMap)
-                            z = m_pMap->GetHeight(x, y, z, false);
+                            z = m_pMap->GetTerrain()->GetHeight(x, y, z, false);
 
                         if (uiSummon_counter < ENCOUNTER_GHOUL_NUMBER)
                         {
@@ -2067,7 +2067,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
                         o = m_creature->GetAngle(x, y) + M_PI_F;
 
                         if (m_pMap)
-                            z = m_pMap->GetHeight(x, y, z, false);
+                            z = m_pMap->GetTerrain()->GetHeight(x, y, z, false);
 
                         if (uiSummon_counter < ENCOUNTER_WARRIOR_NUMBER)
                         {
@@ -2258,7 +2258,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
 
                     case 27:
                         if (Creature* pTemp = m_pMap->GetCreature(uiDarionGUID))
-                            pTemp->setDeathState(JUST_DIED);
+                            pTemp->SetDeathState(JUST_DIED);
                         JumpToNextStep(23000);
                         break;
 
@@ -3187,7 +3187,8 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
 
         GetNearRandomPoint(x, y, z, 30);
 
-        pCreature->SetSummonPoint(x, y, z, o);
+        CreatureCreatePos cPos(m_creature->GetMap(), x, y, z, o, m_creature->GetPhaseMask());
+        pCreature->SetSummonPoint(cPos);
     }
 
     void GetNearRandomPoint(float &x, float &y, float &z, uint8 radius)
@@ -3195,7 +3196,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
         x += float(urand(0, radius) );
         y += float(urand(0, radius) );
         if (m_pMap)
-           z = m_pMap->GetHeight(x, y, z, false);
+           z = m_pMap->GetTerrain()->GetHeight(x, y, z, false);
     }
 
     uint64 DoSpawnNPC(uint32 uiEntry, bool bDarkSide)
@@ -3208,7 +3209,7 @@ struct MANGOS_DLL_DECL npc_highlord_darion_mograineAI : public npc_escortAI
         z = LightofDawnLoc[0].z + 1.0f;
 
         if (m_pMap)
-            z = m_pMap->GetHeight(x, y, z, false);
+            z = m_pMap->GetTerrain()->GetHeight(x, y, z, false);
 
         if (Creature *pTemp = m_creature->SummonCreature(uiEntry, x, y, z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 900000) )
         {
@@ -3357,7 +3358,7 @@ bool GossipSelect_npc_highlord_darion_mograine(Player* pPlayer, Creature* pCreat
     {
         case GOSSIP_ACTION_INFO_DEF+1:
             pPlayer->CLOSE_GOSSIP_MENU();
-            ((npc_highlord_darion_mograineAI*)pCreature->AI())->uiStep = 2;
+            ((npc_highlord_darion_mograineAI*)pCreature->AI())->uiStep = 1;
             ((npc_highlord_darion_mograineAI*)pCreature->AI())->Start(true, false, false, pPlayer->GetGUID());
             pCreature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             break;
