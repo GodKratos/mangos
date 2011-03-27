@@ -21,6 +21,9 @@ UPDATE `creature_template` SET `mindmg` = 220, `maxdmg` = 244, `attackpower` = 2
 UPDATE `creature_template` SET `mindmg` = 223, `maxdmg` = 274, `attackpower` = 220, `dmg_multiplier` = 12.0, `minmana` = 302685, `maxmana` = 302685 WHERE entry = 29181;
 UPDATE `creature_template` SET `mindmg` = 225, `maxdmg` = 284, `attackpower` = 220, `dmg_multiplier` = 12.0 WHERE entry = 29178;
 
+-- drop stats for patchwerk boss for quest Battle for Ebon Hold
+UPDATE `creature_template` SET `minhealth`=50540, `maxhealth`=50540, `dmg_multiplier`=15 WHERE entry = 31099;
+
 -- ACID scripts for mobs taking part in the battle
 UPDATE creature_template SET ScriptName='mob_eventai', AIName='EventAI',unit_flags=0,type_flags=8 WHERE entry IN (29199,29204,29200,29174,29182,29186,29190,29176,29178,29179,29180,29177,29181);
 DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (29174, 29182, 29186, 29190, 29176, 29177, 29181);
